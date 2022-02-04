@@ -9,10 +9,7 @@ static void **stack = NULL;
 static size_t top = 0;
 static size_t capacity = 0;
 
-/**
- * Free everything on the stack.
- */
-static void cleanup(void) {
+void collect(void) {
 	if (stack == NULL) {
 		return;
 	}
@@ -22,15 +19,15 @@ static void cleanup(void) {
 	}
 
 	free(stack);
+	stack = NULL;
+	top = 0;
+	capacity = 0;
 }
 
-/**
- * Allocate some memory and mark it for free-ing at the end of the program.
- */
 void *allocate(size_t size) {
 	// Only initialize the stack once.
 	if (capacity == 0) {
-		atexit(cleanup);
+		atexit(collect);
 		top = 0;
 		capacity = DEFAULT_CAPACITY;
 		stack = malloc(capacity * sizeof(void *));
